@@ -38,7 +38,7 @@ curl http://storage.googleapis.com/www.example.com
 www     CNAME       c.storage.googleapis.com
 ```
 2. Wait between 10 mins to 1 hour for your registrar to publish the entries (*Note: Google Domain Registrar will take just 1 minute since the addresses are within the Google family*). 
-    * You can verify by lookup your domain [here](https://gf.dev/dns-lookup) 
+    * You can verify by doing a DNS lookup for your domain at a site like [this](https://gf.dev/dns-lookup) 
     * You can also verify from your command-line:
     ```
     nslookup -type=cname www.example.com
@@ -63,15 +63,20 @@ Follow the instructions provided by Google Cloud to setup a load balancer and SS
     norm.ns.cloudflare.com
     ```
 3. Wait 1-6 hours for your registrar to publish the entries. (*Note: Google Domain Registrar doesn't like other nameservers and tends to take longer to publish DNS entries*)
-    * You can verify by lookup your domain [here](https://gf.dev/dns-lookup) (*Reminder: don't forget to refresh the lookup page to avoid getting stale results*) 
+    * You can verify by doing a DNS lookup for your domain at a site like [this](https://gf.dev/dns-lookup) (*Reminder: don't forget to refresh the lookup page to avoid getting stale results*) 
     * You can also verify from your command-line:
     ```
     nslookup -type=cname www.example.com
     ```
 4. Configure DNS entries in Cloudflare to proxy to GCS
-    * Add a CNAME record  
+    * Add a CNAME record for the root domain example.com
     ```
-    CNAME    wwww    c.storage.googleapis.com    
+    CNAME   @   c.storage.googleapis.com
+    ```
+    __NOTE__ Normally a CNAME at the root domain is not allowed per the DNS spec. But, the brilliant engineers at Cloudflare have implemented something called [CNAME Flattening](https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/)
+    * Add a CNAME record for 'www' subdomain www.example.com
+    ```
+    CNAME   www     c.storage.googleapis.com    
     ```
 5. Wait between 10 mins to 6 hours for DNS entries to get published
 6. Verify by accessing your website
